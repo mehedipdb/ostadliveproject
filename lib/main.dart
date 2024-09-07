@@ -1,241 +1,170 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(CartApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class CartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Responsive Flutter Layout',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("My Bag"),
+        ),
+        body: CartPage(),
       ),
-      home: const ResponsiveLayout(),
     );
   }
 }
 
-class ResponsiveLayout extends StatelessWidget {
-  const ResponsiveLayout({super.key});
+class CartPage extends StatefulWidget {
+  @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  // Initialize the item counts and unit prices for three items
+  List<int> itemCounts = [1, 1, 1];
+  List<double> unitPrices = [25.00, 30.00, 15.00];
+
+  // Calculate the total price for each item
+  double totalPrice(int index) => itemCounts[index] * unitPrices[index];
+
+  // Calculate the grand total for all items
+  double get grandTotal {
+    double total = 0;
+    for (int i = 0; i < itemCounts.length; i++) {
+      total += totalPrice(i);
+    }
+    return total;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < 600) {
-            // Mobile layout
-            return mobileLayout();
-          } else if (constraints.maxWidth < 1200) {
-            // Tablet layout
-            return tabletLayout();
-          } else {
-            // Desktop layout
-            return desktopLayout();
-          }
-        },
-      ),
-    );
-  }
+    return Column(
+      children: [
+        // List of items
+        Expanded(
+          child: ListView.builder(
+            itemCount: itemCounts.length,
+            itemBuilder: (context, index) {
+              return Card(
+                elevation: 5, // Elevation for the item
+                margin: const EdgeInsets.all(10),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      // Image Section
+                      Container(
+                        width: 100,
+                        height: 100,
+                        child: Image.network(
+                            'https://www.dartscorner.co.uk/cdn/shop/products/P-DE-TSH-HWT-BK-Parent-1.jpg?v=1695255449&width=160'), // Placeholder for item image
+                      ),
+                      const SizedBox(width: 10),
 
-  Widget mobileLayout() {
-    return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: const [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.green),
-              child: Text('Drawer Header'),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About'),
-            ),
-          ],
-        ),
-      ),
-      appBar: AppBar(
-        actions: const [
-          Text(
-            'Mobile Layout    ',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          )
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'FLUTTER WEB.\n THE BASICS',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                  'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book'),
-            ),
-            const SizedBox(height: 50),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                elevation: 6,
-                padding: const EdgeInsets.only(left: 50, right: 50),
-                shape: const BeveledRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(3))),
-              ),
-              onPressed: () {},
-              child: const Text(
-                'Join Meeting',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                      // T-shirt Details
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'T-shirt Name ${index + 1}',
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 10),
+                            const Row(
+                              children: [
+                                Text('Size: M'),
+                                SizedBox(width: 20),
+                                Text('Color: Blue'),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (itemCounts[index] > 1) {
+                                        itemCounts[index]--;
+                                      }
+                                    });
+                                  },
+                                  child: const Text('-'),
+                                ),
+                                const SizedBox(width: 10),
+                                Text('${itemCounts[index]}'),
+                                const SizedBox(width: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      itemCounts[index]++;
+                                    });
+                                  },
+                                  child: const Text('+'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
 
-  Widget tabletLayout() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tablet Layout'),
-        actions: const [
-          Row(
-            children: [
-              Text(
-                'Explore',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '       About     ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              )
-            ],
-          )
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+                      // Price and Menu
+                      Column(
+                        children: [
+
+                          const Icon(Icons.more_vert),
+                          const SizedBox(height: 20),
+                          Text(
+                            '\$${unitPrices[index].toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
+        // Total Price Display
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'FLUTTER WEB.\n THE BASICS',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                "Total Amount:",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
-              const Text(
-                  'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book'),
-              const SizedBox(height: 50),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  elevation: 6,
-                  padding: const EdgeInsets.all(20),
-                  shape: const BeveledRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(3))),
-                ),
-                onPressed: () {},
-                child: const Text(
-                  'Join Meeting',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
+              Text(
+                "\$${grandTotal.toStringAsFixed(2)}",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
 
-  Widget desktopLayout() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Desktop Layout'),
-        actions: const [
-          Row(
-            children: [
-              Text(
-                'Explore',
-                style: TextStyle(fontWeight: FontWeight.bold),
+        // Checkout Button
+        ElevatedButton(
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Congratulations! You have checked out."),
               ),
-              Text(
-                '       About     ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              )
-            ],
-          )
-        ],
-      ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              child: Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'FLUTTER WEB.\n THE BASICS',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                          'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 50),
-          Expanded(
-            flex: 1,
-            child: Container(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  elevation: 6,
-                  padding: const EdgeInsets.all(20),
-                  shape: const BeveledRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(3))),
-                ),
-                onPressed: () {},
-                child: const Text(
-                  'Join Meeting',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+            );
+          },
+          child: const Text('CHECK OUT'),
+        ),
+        const SizedBox(height: 20), // Adding some space below the button
+      ],
     );
   }
 }
